@@ -15,7 +15,7 @@ defmodule Snowflake.Mixfile do
       start_permanent: Mix.env() == :prod,
       maintainers: @maintainers,
       description: "Elixir Snowflake ID Generator",
-      elixir: "~> 1.7",
+      elixir: "~> 1.15",
       package: package(),
       homepage_url: @url,
       docs: docs(),
@@ -29,9 +29,9 @@ defmodule Snowflake.Mixfile do
 
   defp deps do
     [
-      {:dialyxir, "~> 0.4", only: :dev, runtime: false},
-      {:benchee, "~> 0.6", only: :dev},
-      {:ex_doc, "~> 0.14", only: :dev}
+      {:dialyxir, "~> 1.4", only: :dev, runtime: false},
+      {:benchee, "~> 1.4", only: :dev},
+      {:ex_doc, "~> 0.38.1", only: :dev}
     ]
   end
 
