@@ -10,17 +10,34 @@ defmodule Snowflake.Util do
   use Bitwise
 
   @doc """
-  First Snowflake for timestamp, useful if you have a timestamp and want
-  to find snowflakes before or after a certain millesecond
+  Returns the timestamp in millis. Uses `System.os_time/1`.
   """
-  @spec first_snowflake_for_timestamp(integer) :: integer
+  @spec ts :: integer
+  def ts do
+    Snowflake.Helper.epoch()
+    |> ts()
+  end
+
+  @doc """
+  Returns the timestamp in millis from the machine epoch. Uses `System.os_time/1`.
+  """
+  def ts(epoch) do
+    System.os_time(:millisecond) - epoch
+  end
+
+  @doc """
+  First Snowflake for timestamp, useful if you have a timestamp and want
+  to find snowflakes before or after a certain millisecond
+  """
+  @spec first_snowflake_for_timestamp(Snowflake.unix_timestamp()) :: Snowflake.t()
   def first_snowflake_for_timestamp(timestamp) do
     ts = timestamp - Snowflake.Helper.epoch()
-    
-    << new_id :: unsigned-integer-size(64)>> = <<
-       ts :: unsigned-integer-size(42),
-       0 :: unsigned-integer-size(10),
-       0 :: unsigned-integer-size(12) >>
+
+    <<new_id::unsigned-integer-size(64)>> = <<
+      ts::unsigned-integer-size(42),
+      0::unsigned-integer-size(10),
+      0::unsigned-integer-size(12)
+    >>
 
     new_id
   end
@@ -28,7 +45,7 @@ defmodule Snowflake.Util do
   @doc """
   Get timestamp in ms from your config epoch from any snowflake ID
   """
-  @spec timestamp_of_id(integer) :: integer
+  @spec timestamp_of_id(Snowflake.t()) :: Snowflake.epoch_timestamp()
   def timestamp_of_id(id) do
     id >>> 22
   end
@@ -36,7 +53,7 @@ defmodule Snowflake.Util do
   @doc """
   Get timestamp from computer epoch - January 1, 1970, Midnight
   """
-  @spec real_timestamp_of_id(integer) :: integer
+  @spec real_timestamp_of_id(Snowflake.t()) :: Snowflake.unix_timestamp()
   def real_timestamp_of_id(id) do
     timestamp_of_id(id) + Snowflake.Helper.epoch()
   end
@@ -44,7 +61,7 @@ defmodule Snowflake.Util do
   @doc """
   Get bucket value based on segments of N days
   """
-  @spec bucket(integer, atom, integer) :: integer
+  @spec bucket(integer, atom, Snowflake.t()) :: integer
   def bucket(units, unit_type, id) do
     round(timestamp_of_id(id) / bucket_size(unit_type, units))
   end
@@ -61,7 +78,8 @@ defmodule Snowflake.Util do
   defp bucket_size(unit_type, units) do
     case unit_type do
       :hours -> 1000 * 60 * 60 * units
-      _ -> 1000 * 60 * 60 * 24 * units  # days is default
+      # days is default
+      _ -> 1000 * 60 * 60 * 24 * units
     end
   end
 end
