@@ -15,18 +15,20 @@ In your mix.exs file:
 
 ```elixir
 def deps do
-  [{:snowflake, github: "frm/snowflake", tag: "v1.0.5"}]
+  [{:snowflake, github: "frm/snowflake", tag: "v1.2.0"}] # Replace with the new version tag once created
 end
 ```
 
-If you're using Elixir v1.3 or earlier, add the following to your `mix.exs`
-file.
+This library requires Elixir `~> 1.15`.
+
+Ensure `:snowflake` is listed in your `application` function in `mix.exs` if you are using Elixir versions prior to 1.4 or if you need to explicitly manage application startup order:
 
 ```elixir
 def application do
-  [applications: [:snowflake]]
+  [applications: [:snowflake]] # Or applications: [:logger, :runtime_tools, :snowflake] for Elixir < 1.4
 end
 ```
+For Elixir 1.4+ with Mix 1.4+, if `:snowflake` is listed in `:deps`, it's typically started automatically. However, explicitly listing it is fine.
 
 Specify the nodes in your config. If you're running a cluster, specify all the nodes in the cluster that snowflake runs on.
 
